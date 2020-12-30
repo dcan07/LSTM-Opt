@@ -1,0 +1,138 @@
+1) CLSP instances are generated with CPLEX inplemented using C++ in "Capacitated lot-sizing problem". User must modify the following variables to generate instances with specific parameters:
+//Number of CLSP Instances that must be solved
+int NumOfInstance = 100000;
+//Capacity to demand ratio - c
+int capdem = 3;
+//Setup to holding cost ratio - f
+int sethold = 1000;
+//Number of stages in CLSP
+int NumOfStage = 90;
+//Output file
+myfile.open("/data/resultsfromclspsolvercd3f1000t90n100k.txt");
+
+2) Train LSTM Models using the generated CLSP data with "CLSP_Model_Train", generate and save predictions. User inputs:
+
+#Data input path
+inputPath='/data/resultsfromclspsolvercd3f1000t90n100k.txt'       
+
+#number os stages of the CLSP instances
+numberofstages=90   
+
+#This is the model path that used for saving the trained LSTM model
+modelPath='/results/c3f1000t90.h5'
+
+#This is the path that used for saving the model plots such as loss, learning rate, Roc, histogram and heatmap of predictions 
+#This is just for visualization and does not change the training 
+figurePath='/results/plot'
+
+#Output path to write results with predictions
+outputPath='/results/c3f1000t90'
+
+#If validation set is used data is divided as: Train 64%, Validation 16%, Test 20%
+#If validation set is not used data is divided as: Train 80%, Test 20%
+#validationOption=False is used for training after model hyperparameters are decided using validation set
+validationOption=False
+
+#LSTM hyperparameters used for training
+learning_rate=0.01
+number_of_hidden_units=40
+dropout=0.3
+batch_size=64
+
+3) Generate predictions using trained LSTM Models for generalization experiments and save predictions with "CLSP_Model_Generalization". User inputs:
+
+#input path to read the data
+inputPath='/data/resultsfromclspsolvercd3f1000t180n20k.txt'       
+#number os stages of the clsp instances, and the trained LSTM model
+numberofstagesinData=180
+numberofstagesinModel=90
+
+#This is the model path that used for loading the trained model
+modelPath='/results/c3f1000t90.h5'
+
+#Output path to write results
+outputPath='/results/c3f1000t90generalization'
+
+4) Resolve the CLSP instances using generated predictions with "clspfeasibilitychecker". User inputs are:
+
+//Number of instances in the test set
+int testsetlength;
+testsetlength = 20000;
+
+//Input files that will be solved using predictions from LSTM
+//Could be single file
+string inputfiles[] = { 
+	"/results/c3f1000t90-percent25.txt", 
+	"/results/c3f1000t90-percent50.txt",
+	"/results/c3f1000t90-percent75.txt",
+	"/results/c3f1000t90-percent85.txt",
+	"/results/c3f1000t90-percent90.txt",
+	"/results/c3f1000t90-percent95.txt",
+	"/results/c3f1000t90-percent100.txt" };
+	
+//Output files that the results will be written
+string outputfiles[] = { 
+	"/results/resultsc3f1000t90-percent25.txt",
+	"/results/resultsc3f1000t90-percent50.txt",
+	"/results/resultsc3f1000t90-percent75.txt",
+	"/results/resultsc3f1000t90-percent85.txt",
+	"/results/resultsc3f1000t90-percent90.txt",
+	"/results/resultsc3f1000t90-percent95.txt",
+	"/results/resultsc3f1000t90-percent100.txt" };
+
+//Number of stages for files
+//Note that inputfiles, outputfiles and NumOfStageArr should be of same length
+int NumOfStageArr[] = { 90, 90,90,90,90,90,90};
+
+5) Resolve the CLSP instances using generated predictions with "clspinitialsolution" with MS or UC approach. User inputs are:
+
+//Number of instances in the test set
+int testsetlength;
+testsetlength = 20000;
+
+//IMPORTANT INPUT
+//Choose to one of the  MipStart or USerCuts approach to use
+//string Option = "MS";
+string Option = "UC";
+
+//Input files that will be solved using predictions from LSTM
+//Could be single file
+string inputfiles[] = {
+	"/results/c3f1000t90-percent100.txt",
+	"/results/c5f1000t90-percent100.txt" };
+
+//Output files that the results will be written
+string outputfiles[] = {
+	"/results/resultsc3f1000t90-percent100uc.txt",
+	"/results/resultsc5f1000t90-percent100uc.txt" };
+
+//Number of stages for files
+//Note that inputfiles, outputfiles and NumOfStageArr should be of same length
+int NumOfStageArr[] = { 90, 90};
+
+6) Calculate the metrics defined in the paper with "CalculateMetrics". User inputs:
+
+#Input path of the files containing results
+inputPath='/results/'   
+
+#Output file to write the results
+outputPath='/results/c3f1000results.csv'   
+ 
+#Prediction levels that are used in the experiments
+predictionLevels=[25,50,75,85,90,95,100]
+
+#Other approaches that are used in the experiments
+#ms represents the MIPStart and UC represents the usercuts approach that are used with 100% prediction level
+#They are used to read file and calculate the metric separately from the 25 to 100% prediction level
+#for generalization experiments ms is not considered due to its lack of performance
+otherApproaches=['ms','uc']
+
+#Number of Stages is an array holds the number of stages for each dataset
+numberOfStagesArray=[90,90,90]
+
+#Mean prediction time for a single instance in seconds
+meanPredictionTime=[30/20000,30/20000,30/20000]
+
+#Model names contains the names of the results that needs to examined together, which is necessary for calculating averages
+#For example, results for f=1,000, T=90, and c=3,5,8 are calculated together
+modelNames=['c3f1000t90','c5f1000t90','c8f1000t90']

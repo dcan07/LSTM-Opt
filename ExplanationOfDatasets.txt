@@ -1,0 +1,11 @@
+There are several types of datasets used in the study. For example consider the dataset with:
+Capacity to demand ratio - c = 3
+Setup to holding cost ratio - f = 1000
+Number of stages - t = 90
+Number of instances - n = 100k
+
+1) Solved CLSP instances are saved to file "resultsfromclspsolvercd3f1000t90n100k.txt"
+2) Predictions (e.g. 75% level) with CSLP data are saved to file "c3f1000t90-percent75.txt"
+3) Predictions (e.g. 75% level) with CSLP data for generalization experiments as presented in the paper are saved to file "c3f1000t90generalization-percent75.txt"
+4) Results involve solution times and objective function values from benchmark CLSP instances and CLSP instances with predictions. It is saved as "resultsc3f1000t90-percent75.txt" ("resultsc3f1000t90-percent100uc.txt" and "resultsc3f1000t90-percent100ms.txt" for UC and MS, respectively)
+5) Results for generalization involve solution times and objective function values from benchmark CLSP instances and CLSP instances with predictions. It is saved as "resultsc3f1000t90generalization-percent75.txt" ("resultsc3f1000t90-percent100uc.txt" for UC)
